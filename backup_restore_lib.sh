@@ -49,8 +49,8 @@ validate_restore_params() {
         exit 1
     fi
 
-    if [ ! -d "$backup_dir" ]; then
-        echo "Error: Backup directory does not exist."
+    if [ ! -d "$backup_dir" ] || [ -z "$(ls -A "$backup_dir")" ]; then
+        echo "Error: Backup directory does not exist or is empty."
         exit 1
     fi
 
