@@ -8,28 +8,28 @@ This tool provides functionality for secure encrypted backup and restore of dire
 ### backup.sh
 
 The `backup.sh` script is used to perform a backup of a specific directory. It takes four command-line parameters:
-backup.sh <source_directory> <backup_directory> <encryption_key> <days>
+backup.sh `-s` <source_directory> `-b` <backup_directory> `-k` <encryption_key> `-d` <days>
 
-- `<source_directory>`: The directory to be backed up.
-- `<backup_directory>`: The directory where the backup will be stored.
-- `<encryption_key>`: The encryption key used to encrypt the backup.
-- `<days>`: The number of days to backup only the changed files.
+- `-s`: The directory to be backed up.
+- `-b`: The directory where the backup will be stored.
+- `-k`: The encryption key used to encrypt the backup.
+- `-d`: The number of days to backup only the changed files.
 
 Example usage:
-backup.sh /path/to/source /path/to/backup myencryptionkey 7
+backup.sh -s /path/to/source -b /path/to/backup -k myencryptionkey -d 7
 
 
 ### restore.sh
 
 The `restore.sh` script is used to restore a backup that was created using `backup.sh`. It takes three command-line parameters:
-restore.sh <backup_directory> <restore_directory> <decryption_key>
+restore.sh `-b` <backup_directory> `-r` <restore_directory> `-k` <decryption_key>
 
-- `<backup_directory>`: The directory that contains the backup.
-- `<restore_directory>`: The directory where the backup should be restored to.
-- `<decryption_key>`: The decryption key used to restore the backup.
+- `-b`: The directory that contains the backup.
+- `-r`: The directory where the backup should be restored to.
+- `-k`: The decryption key used to restore the backup.
 
 Example usage:
-restore.sh /path/to/backup /path/to/restore mydecryptionkey
+restore.sh -b /path/to/backup -r /path/to/restore -k mydecryptionkey
 
 
 

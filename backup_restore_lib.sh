@@ -1,62 +1,65 @@
 # Function to validate backup parameters
-validate_backup_params(){
-    if [ $# -ne 4 ]; then
-        echo "Error: 4 arguments required"
-        echo "Usage: backup.sh <source_directory> <backup_directory> <encryption_key> <days>"
+validate_backup_params() {
+    while getopts ":s:b:k:d:" opt; do
+        case $opt in
+            s) source_dir=$OPTARG ;;
+            b) backup_dir=$OPTARG ;;
+            k) encryption_key=$OPTARG ;;
+            d) days=$OPTARG ;;
+            \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+        esac
+    done
+
+    if [ -z "$source_dir" ] || [ -z "$backup_dir" ] || [ -z "$encryption_key" ] || [ -z "$days" ]; then
+        echo "Error: Missing required arguments"
+        echo "Usage: backup.sh -s <source_directory> -b <backup_directory> -k <encryption_key> -d <days>"
         exit 1
     fi
 
-    if [ ! -d "$1" ]; then
+    if [ ! -d "$source_dir" ]; then
         echo "Error: Source directory does not exist."
         exit 1
     fi
 
-    if [ ! -d "$2" ]; then
+    if [ ! -d "$backup_dir" ]; then
         echo "Warning: Backup directory does not exist. Creating the directory..."
-        mkdir -p "$2"
+        mkdir -p "$backup_dir"
     fi
 
-    if [ -z "$3" ]; then
-        echo "Error: Encryption key not provided"
+    if ! [[ "$days" =~ ^[0-9]+$ ]]; then
+        echo "Error: Days must be a positive integer"
         exit 1
     fi
-
-    if ! [[ "$4" =~ ^[0-9]+$ ]]; then
-        echo "Error: Days must be a number"
-        exit 1
-    fi
-
-    source_dir=$1
-    backup_dir=$2
-    encryption_key=$3
-    days=$4
 }
+
 # Function to validate restore parameters
-validate_restore_params(){
-    if [ $# -ne 3 ]; then
-        echo "Error: 3 arguments required"
-        echo "Usage: restore.sh <backup_directory> <restore_directory> <decryption_key>"
+validate_restore_params() {
+    while getopts ":b:r:k:" opt; do
+        case $opt in
+            b) backup_dir=$OPTARG ;;
+            r) restore_dir=$OPTARG ;;
+            k) decryption_key=$OPTARG ;;
+            \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
+        esac
+    done
+
+    if [ -z "$backup_dir" ] || [ -z "$restore_dir" ] || [ -z "$decryption_key" ]; then
+        echo "Error: Missing required arguments"
+        echo "Usage: restore.sh -b <backup_directory> -r <restore_directory> -k <decryption_key>"
         exit 1
     fi
 
-    if [ ! -d "$1" ]; then
+    if [ ! -d "$backup_dir" ]; then
         echo "Error: Backup directory does not exist."
         exit 1
     fi
 
-    if [ ! -d "$2" ]; then
+    if [ ! -d "$restore_dir" ]; then
         echo "Warning: Restore directory does not exist. Creating the directory..."
-        mkdir -p "$2"
+        mkdir -p "$restore_dir"
     fi
 
-    if [ -z "$3" ]; then
-        echo "Error: Decryption key not provided"
-        exit 1
-    fi
-
-    backup_dir="$(ls -td "$1"/* | head -n 1)"
-    restore_dir=$2
-    decryption_key=$3
+    backup_dir="$(ls -td "$backup_dir"/* | head -n 1)"
 }
 
 # Function to perform backup
@@ -123,6 +126,12 @@ backup(){
 # Function to perform restore
 restore(){
     temp_dir="$restore_dir/temp/$(basename $backup_dir)"
+
+    if [ -d $temp_dir ] ; then
+        echo "This Backup Already Restored in $temp_dir"
+        exit 1
+    fi
+
     mkdir -p "$temp_dir"
 
     find "$backup_dir" -type f -name "*.gpg" -printf "%P\n" | while read -r encrypted
