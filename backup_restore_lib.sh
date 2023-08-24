@@ -16,8 +16,8 @@ validate_backup_params() {
         exit 1
     fi
 
-    if [ ! -d "$source_dir" ]; then
-        echo "Error: Source directory does not exist."
+    if [ ! -d "$source_dir" ] || [ -z "$(ls -A "$source_dir")" ]; then
+        echo "Error: Source directory does not exist or is empty."
         exit 1
     fi
 
