@@ -101,7 +101,7 @@ backup(){
     # Create a main tar file by adding all encrypted tar files
     find "$backup_path" -type f -name "*.gpg" -printf "%P\n" | while read -r gpgFile
     do
-        echo "Adding all encrypted files to ${backup_date}.tar"
+        echo "Adding $(basename "$gpgFile") to ${backup_date}.tar"
         tar -rf "$backup_path/${backup_date}.tar" -C "$backup_path" "$(basename "$gpgFile")" || {
             echo "Error: Failed to add file '$gpgFile' to the main tar file"
             exit 1
