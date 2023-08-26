@@ -1,6 +1,6 @@
 # Backup and Restore Tool
 
-This tool provides functionality for secure encrypted backup and restore of directories in Linux. It consists of three scripts: `backup.sh`, `restore.sh`, and `backup_restore_lib.sh`.
+This tool provides functionality for secure encrypted backup and restore of directories in Linux. It consists of three main scripts: `backup.sh`, `restore.sh`, and `backup_restore_lib.sh`.
 
 ## Usage
 
@@ -32,6 +32,17 @@ Example usage:
 restore.sh -b /path/to/backup -r /path/to/restore -k mydecryptionkey
 
 
+## Automated Backups
+
+To setup daily automated backups using crontab:
+
+- Edit crontab: `crontab -e`
+- Add a line like:  **`0  5  *  *  *   /path/to/cronjob.sh`**
+- The cronjob will run backup.sh daily at `5:00 AM`
+- Backup logs will be written to `cron_backup_logs.log`
+
+Remember to replace with the actual paths and keys used in your code.
+
 
 ## Prerequisites
 
@@ -51,3 +62,5 @@ restore.sh -b /path/to/backup -r /path/to/restore -k mydecryptionkey
 
 
 Remember to replace /path/to/source, /path/to/backup, /path/to/restore, myencryptionkey, and mydecryptionkey with the actual paths and keys used in your code.
+
+![Sample Succesfully Backup logs](backup-logs.png)
