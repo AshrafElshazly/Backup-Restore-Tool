@@ -63,4 +63,6 @@ Remember to replace with the actual paths and keys used in your code.
 
 Remember to replace /path/to/source, /path/to/backup, /path/to/restore, myencryptionkey, and mydecryptionkey with the actual paths and keys used in your code.
 
+## Successful Backup Logs
+
 ![Sample Succesfully Backup logs](backup-logs.png)
