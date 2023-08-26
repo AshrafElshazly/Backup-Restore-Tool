@@ -151,14 +151,17 @@ backup(){
     if [ -f "$backup_path/${backup_date}.tar.gz.gpg" ] && [ -f "labsuser.pem" ]; then
     
         echo "Transfaring $backup_path/${backup_date}.tar.gz.gpg to a remote server"
-        scp -i labsuser.pem "$backup_path/${backup_date}.tar.gz.gpg" ubuntu@34.219.69.84:~
+        scp -i labsuser.pem "$backup_path/${backup_date}.tar.gz.gpg" ubuntu@34.219.69.84:~ || {
+            echo "Error: There is problem with your server or privaty key"
+            exit 1
+        }
 
         echo "------------------------------------------------------------"
         echo "||  Backup transfer to a remote server process complete!  ||"
         echo "------------------------------------------------------------"
 
     else
-        echo "Error: labuser.pem not found or there is problem with "${backup_date}.tar.gz.gpg" file"
+        echo "Error: labuser.pem or "${backup_date}.tar.gz.gpg" file not found"
     fi
 }
 
