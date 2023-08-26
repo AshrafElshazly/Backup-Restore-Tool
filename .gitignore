@@ -1,5 +1,5 @@
 /backup
 /data
 /temp
-labuser.pem
-cronjob.sh
+labsuser.pem
+backup-logs.png
