@@ -40,8 +40,6 @@ To setup daily automated backups using crontab:
 - The cronjob will run backup.sh daily at `5:00 AM`
 - Backup logs will be written to `cron_backup_logs.log`
 
-Remember to replace with the actual paths and keys used in your code.
-
 ## Prerequisites
 
 - Linux operating system
@@ -58,7 +56,7 @@ Remember to replace with the actual paths and keys used in your code.
 - The backup script will also create a main tar.gz file that includes all encrypted tar files and compress it.
 - The encrypted main tar.gz file will be transferred to a remote server using `scp` if the `labsuser.pem` private key file is available.
 
-Remember to replace /path/to/source, /path/to/backup, /path/to/restore, myencryptionkey, and mydecryptionkey with the actual paths and keys used in your code.
+Remember to replace with the actual paths and keys used in your code.
 
 ## Successful Backup Logs
 
