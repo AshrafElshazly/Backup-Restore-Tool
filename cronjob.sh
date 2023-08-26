@@ -9,9 +9,10 @@ SOURCE_DIR="/home/elshazlii/Backup-Restore-Tool/data"
 BACKUP_DIR="/home/elshazlii/Backup-Restore-Tool/backup"
 ENCRYPTION_KEY="1a2b3c"
 DAYS=1
+LOGS_PATH="/home/elshazlii"
 
 { $BACKUP_SCRIPT_PATH -s $SOURCE_DIR -b $BACKUP_DIR -k $ENCRYPTION_KEY -d $DAYS 2>&1 | while IFS= read -r line; 
         do 
             printf "[%s]: " "$(date "+%F %T")"; echo "$line"; 
         done 
-} >> /home/elshazlii/cron_backup_logs.log
+} >> $LOGS_PATH/cron_backup_logs.log
