@@ -77,21 +77,22 @@ backup(){
 
             # Create a compressed tar file for each directory
             echo "Creating tar file for $dir"
-            tar -czf "$backup_path/$(basename "$dir")_${backup_date}.tar.gz" -C "$source_dir" "$(basename "$dir")" || {
+            tar_file_name="$backup_path/$(basename "$dir")_${backup_date}.tar.gz"
+            tar -czf $tar_file_name -C "$source_dir" "$(basename "$dir")" || {
                 echo "Error: Failed to create tar file for directory '$dir'"
                 exit 1
             }
 
             # Encrypt the tar file using the provided encryption key
             echo "Encrypting tar file for $(basename "$dir")_${backup_date}.tar.gz"  
-            gpg --batch --yes --passphrase "$encryption_key" -c "$backup_path/$(basename "$dir")_${backup_date}.tar.gz" || {
+            gpg --batch --yes --passphrase "$encryption_key" -c $tar_file_name || {
                 echo "Error: Failed to encrypt tar file for directory '$dir'"
                 exit 1
             }
 
             # Delete the original tar file
             echo "Deleting original tar file for $(basename "$dir")_${backup_date}.tar.gz"
-            rm "$backup_path/$(basename "$dir")_${backup_date}.tar.gz" || {
+            rm $tar_file_name || {
                 echo "Error: Failed to delete original tar file for directory '$dir'"
                 exit 1
             }
@@ -99,10 +100,11 @@ backup(){
     done
 
     # Create a main tar file by adding all encrypted tar files
+    main_tar_file="$backup_path/${backup_date}.tar"
     find "$backup_path" -type f -name "*.gpg" -printf "%P\n" | while read -r gpgFile
     do
         echo "Adding $(basename "$gpgFile") to ${backup_date}.tar"
-        tar -rf "$backup_path/${backup_date}.tar" -C "$backup_path" "$(basename "$gpgFile")" || {
+        tar -rf $main_tar_file -C "$backup_path" "$(basename "$gpgFile")" || {
             echo "Error: Failed to add file '$gpgFile' to the main tar file"
             exit 1
         }
@@ -115,23 +117,24 @@ backup(){
     done
 
     # Compress the main tar file
-    if [ -f "$backup_path/${backup_date}.tar" ] ; then
+    if [ -f $main_tar_file ] ; then
 
         echo "Creating gzip file for ${backup_date}.tar"
-        tar -czf "$backup_path/${backup_date}.tar.gz" -C "$backup_path" "$backup_date.tar" || {
+        main_tar_file_gz="$main_tar_file.gz"
+        tar -czf "$main_tar_file_gz" -C "$backup_path" "$backup_date.tar" || {
             echo "Error: Failed to add file '$backup_date.tar' to the main tar file"
             exit 1
         }
 
         echo "Deleting $backup_date.tar"
-        rm "$backup_path/$backup_date.tar"
+        rm "$main_tar_file"
     fi
 
     # Encrypt the main tar file
-    if [ -f "$backup_path/${backup_date}.tar.gz" ] ; then
+    if [ -f "$main_tar_file_gz" ] ; then
 
         echo "Encrypting main ${backup_date}.tar.gz file"
-        gpg --batch --yes --passphrase "$encryption_key" -c "$backup_path/${backup_date}.tar.gz" || {
+        gpg --batch --yes --passphrase "$encryption_key" -c "$main_tar_file_gz" || {
             echo "Error: Failed to encrypt the main tar file"
             exit 1
         }
@@ -147,11 +150,12 @@ backup(){
         echo "-------------------------------------"
     fi
 
-    # Transfer the encrypted main tar file to a remote server
-    if [ -f "$backup_path/${backup_date}.tar.gz.gpg" ] && [ -f "labsuser.pem" ]; then
+    # Transfer the encrypted main file to a remote server
+    remote_file="$main_tar_file_gz.gpg"
+    if [ -f "$remote_file" ] && [ -f "labsuser.pem" ]; then
     
-        echo "Transfaring $backup_path/${backup_date}.tar.gz.gpg to a remote server"
-        scp -i labsuser.pem "$backup_path/${backup_date}.tar.gz.gpg" ubuntu@34.219.69.84:~ || {
+        echo "Transfaring $remote_file to a remote server"
+        scp -i labsuser.pem "$remote_file" ubuntu@34.219.69.84:~ || {
             echo "Error: There is problem with your server or privaty key"
             exit 1
         }
@@ -161,7 +165,7 @@ backup(){
         echo "------------------------------------------------------------"
 
     else
-        echo "Error: labuser.pem or "${backup_date}.tar.gz.gpg" file not found"
+        echo "Error: labuser.pem or $remote_file file not found"
     fi
 }
 
